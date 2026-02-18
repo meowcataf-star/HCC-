@@ -1,0 +1,78 @@
+#importing modules and datasets 
+import pandas as pd 
+import numpy as np 
+df = pd.read_csv("cirrhosis.csv")
+
+# Verify it worked
+print(df.info())
+print(df.describe())
+
+#mapping dictionary 
+status_rule={
+    'C':1,
+    'CL':0.5,
+    'D': 0
+}
+ascites_rule={
+    'N':0,
+    'Y':1
+}
+drug_rule={
+    'D-penicillamine':1,
+    'Placebo':0.5
+}
+hep_rule={
+    'Y':1,
+    'N':0
+}
+spid_rule={
+    'Y':1,
+    'N':0
+}
+#filter patient data/ fill in N/A values 
+df['Hepatomegaly'] = df['Hepatomegaly'].replace(0.5, np.nan)
+df['Spiders'] = df['Spiders'].replace(0.5, np.nan)
+df['Cholesterol'] = df['Cholesterol'].fillna(df['Cholesterol'].mean())
+df['Copper'] = df['Copper'].fillna(df['Copper'].mean())
+
+
+#look at ascite content in Stage 3 vs. Stage 4 
+mode= df['Ascites'].mode()[0]
+df['Ascites'] = df['Ascites'].fillna(mode)
+df['Ascites_Code'] = df['Ascites'].map(ascites_rule)
+#selecting two groups to analyze 
+all_counts = df.groupby('Stage')['ID'].agg('count')
+print(f"There are {all_counts[3]} Stage 3 patients.")
+print (f"There are {all_counts[4]} Stage 4 patients." )
+#calculate avg ascite presence 
+avg_as= round(df.groupby ('Stage')['Ascites_Code']. mean(),3) 
+print(f"Average presence of ascites is {avg_as[3]} for Stage 3 patients.")
+print(f"Average presence of ascites is {avg_as[4]} for Stage 4 patients.")
+
+#bilirubin content in Stage 3 vs. Stage 4 
+avg_bili= round(df.groupby ('Stage')['Bilirubin'].mean(), 3) 
+print(f"Average bilirubin for Stage 3 patients is {avg_bili[3]}.")
+print(f"Average bilirubin for Stage 4 patients is {avg_bili[4]}.") 
+
+#status of the patient in Stage 3 vs. 4 
+df['Status_Code']= df['Status'].map(status_rule)
+alive_df = df[df['Status_Code'].isin ([1,0.5])]
+alive_by_stage = alive_df.groupby('Stage')['ID'].count() 
+print(f"There are {alive_by_stage[3]} Stage 3 patients that remained alive out of {all_counts[3]}.")
+print(f"There are {alive_by_stage[4]} Stage 4 patients that reamined alive out of {all_counts[4]}.")
+
+
+#drug intake in Stage 3 vs 4 
+df['Drug'] = df['Drug'].replace(0, np.nan)
+df['Drug_Code'] = df['Drug'].map(drug_rule)
+drug_df = df[df['Drug_Code']==1]
+drug_by_stage = drug_df.groupby('Stage')['ID'].count()
+print (f"There are {drug_by_stage[3]} Stage 3 patients that used D-penicillamine.")
+print (f"There are {drug_by_stage[4]} Stage 4 patients that used D-penicillamine.")
+
+#albumin in Stage 3 vs 4 
+avg_ali= round(df.groupby ('Stage')['Albumin'].mean(), 3) 
+print(f"Average albumin for Stage 3 patients is {avg_ali[3]}.")
+print(f"Average albumin for Stage 4 patients is {avg_ali[4]}.") 
+
+

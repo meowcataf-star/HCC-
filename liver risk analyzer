@@ -1,0 +1,72 @@
+import pandas as pd 
+import numpy as np 
+df = pd.read_csv("cirrhosis.csv")
+patient_ID = df.loc[15, 'ID'] #use st.selectbox(...) when importing Streamlit to allow user to pick patient ID 
+bilirubin = 0 
+albumin = 0 
+ascites = 0 
+endcepathology_level = 0 
+inr = 0 
+#defining calculation function 
+def calculate_child_pugh (bilirubin, albumin, ascites, endcepathology_level, inr):
+    result = bilirubin + albumin + ascites + endcepathology_level + inr  
+    if 5 <= result <= 6:
+        message = "Class A.The patient has mild liver cirrhosis. Survival rate is 85-100%."
+    elif 7 <= result <= 9:
+        message = "Class B.The patient has moderate liver cirrhosis. More symptoms might emerge. Survival rate is 60-80%"
+    elif 10 <= result <= 15:
+        message = "Class C. The patient has severe liver cirrhosis. Look into transplants immediately. Survival rate is 35-45%"
+    return result and message 
+
+#defining bilirubin parameters 
+pv_bili = df.loc[patient_ID, 'Bilirubin']
+if df.loc[patient_ID, 'Bilirubin'] < 2:
+    bilirubin = 1
+elif 2 <= df.loc[patient_ID, 'Bilirubin'] <= 3:
+    bilirubin = 2 
+elif df.loc[patient_ID, 'Bilirubin'] > 3:
+    bilirubin = 3 
+print("Adding " + str(bilirubin) + " points to the score!")
+
+#defining albumin parameters
+pv_al = df.loc[patient_ID, 'Albumin']
+if df.loc[patient_ID, 'Albumin'] > 3.5:
+    albumin = 1
+elif 2.8 <= df.loc[patient_ID, 'Albumin'] <= 3.5:
+    albumin = 2
+elif df.loc[patient_ID, 'Albumin'] < 2.8: 
+    albumin = 3
+print("Adding " + str(albumin) + " points to the score!")
+
+#defining ascites parameters 
+pv_as = df.loc[patient_ID, 'Ascites']
+if df.loc[patient_ID, 'Ascites'] == 'Y':
+    ascites = 3
+elif df.loc[patient_ID, 'Ascites'] == 'N':
+    ascites = 1
+elif df.loc[patient_ID, 'Ascites'] == 'NA':
+    ascites = 2
+print ("Adding " + str(ascites) + " points to the score!")
+
+#defining INR parameters 
+PT = df.loc[patient_ID, 'Prothrombin'] 
+if PT/12 <1.7:
+    inr = 1
+elif 1.7 <= PT/12 <= 2.3: 
+    inr = 2 
+elif PT/12 >2.3: 
+    inr = 3 
+print ("Adding " + str(inr) + " points to the score!")
+
+#defining endce. parameters 
+pv_stage = df.loc[patient_ID, 'Stage']
+if df.loc[patient_ID, 'Stage'] in [1,2,3]:
+    endcepathology_level = 1 
+elif df.loc[patient_ID, 'Stage'] == 4 and bilirubin == 2: 
+    endcepathology_level = 2 
+elif df.loc[patient_ID, 'Stage'] == 4 and bilirubin == 3: 
+    endcepathology_level = 3 
+print ("Adding " + str(endcepathology_level) + " points to the score!")
+
+conclusion = calculate_child_pugh(bilirubin, albumin, ascites, endcepathology_level, inr)
+print(str(conclusion))

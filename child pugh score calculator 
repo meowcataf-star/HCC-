@@ -1,0 +1,184 @@
+
+#welcome message 
+print("Welcome to the Child Pugh Score Calculator.")
+print ("Take this short quiz to get to know the status of your liver cirrhosis.")
+
+#bilirubin
+print ("Select your bilirubin level:")
+print ("1 - <2 mg/dL (<34.2 µmol/L)")
+print ("2 - 2-3 mg/dL (34.2-51.3 µmol/L)")
+print ("3 - >3 mg/dL (>51.3 µmol/L)")
+#ranking the levels 
+while True:
+    try: 
+        choice =int(input("Enter level (1-3):").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        continue
+    if choice == 1: 
+        print("Points entered.")
+        child_pugh_score1 = 1
+        break
+    elif choice == 2: 
+        print ("Points entered.")
+        child_pugh_score1 = 2
+        break
+    elif choice == 3: 
+        print ("Points entered.")
+        child_pugh_score1 = 3
+        break
+    else:
+        print ("Invalid level. Please enter a number from 1-3.")
+        continue
+#moving onto albumin 
+print("Select your albumin level:")
+print("1 - >3.5 g/dL (>35 g/L)")
+print("2 - 2.8-3.5 g/dL (28-35 g/L)")
+print("3 - <2.8 g/dL (<28 g/L)")
+#ranking the levels 
+while True: 
+    try: 
+        choice =int(input("Enter level (1-3):").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        continue
+    if choice == 1: 
+        print("Points entered.")
+        child_pugh_score2 = 1
+        break 
+    elif choice == 2: 
+        print("Points entered.")
+        child_pugh_score2 = 2 
+        break 
+    elif choice == 3: 
+        print("Points entered.")
+        child_pugh_score2 = 3
+        break 
+    else: 
+        print("Invalid level. Please enter a number from 1-3.")
+        continue 
+# moving onto INR
+print("Select your INR:")
+print ("1 - <1.7")
+print ("2 - 1.7-2.3")
+print ("3 - >2.3")
+#ranking levels 
+while True: 
+    try:
+        choice = int(input("Enter your ratio (1-3):").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        continue
+    if choice == 1: 
+        print ("Points entered.")
+        child_pugh_score3 = 1
+        break 
+    elif choice == 2: 
+        print("Points entered.")
+        child_pugh_score3 = 2 
+        break 
+    elif choice == 3: 
+        print("Points entered.")
+        child_pugh_score3 = 3
+        break 
+    else: 
+        print("Invalid level. Please enter a number from 1-3.")
+        continue 
+
+#Ascites 
+print ("Do you have ascites?")
+print ("1 - Not at all")
+print ("2 - A little bit")
+print ("3 - Yes I do.")
+#ranking levels 
+while True:
+    try:
+        choice = int(input("Enter a value (1-3):").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        continue
+    if choice == 1:
+        print("Points entered.")
+        child_pugh_score4 = 1
+    elif choice == 2:
+        print("Points entered.")
+        child_pugh_score4 = 2
+    elif choice == 3:
+        print("Points entered.")
+        child_pugh_score4 = 3
+    break
+#Encephalopathy
+endcephalopathy_score1= 0
+while True: 
+    try: 
+        answer = str(input("Do you feel irritable and agitated daily? (yes/no)")).lower().strip()
+        break 
+    except ValueError:
+        print("Invalid input. Please answer yes or no.")
+        continue
+
+    if answer == "yes": 
+        endcephalopathy_score1 = endcephalopathy_score1 + 1
+        answer = str(input("Have you been getting good sleep lately? (yes/no)")).lower()
+        break 
+    elif answer == "no":
+        endcephalopathy_score1 = endcephalopathy_score1 + 0
+        answer = str(input("Have you been getting good sleep lately? (yes/no)")).lower()
+        break 
+    else: 
+        print("Invalid option. Please answer yes or no")
+        continue
+#moving to next question
+
+while True: 
+    try: 
+        answer = str(input("Have you been getting good sleep lately? (yes/no)")).lower().strip()
+    except ValueError:
+        print("Invalid input. Please answer yes or no.")
+        continue
+    if answer == "yes":
+        endcephalopathy_score2 = endcephalopathy_score1 + 1
+        answer = str(input("Do you regularly experience flapping tremors/asterixis? (yes/no)")).lower().strip()
+        break 
+    elif answer == "no": 
+        endcephalopathy_score2 = endcephalopathy_score1 + 0
+        answer = str(input("Do you regularly experience flapping tremors/asterixis? (yes/no)")).lower().strip()
+        break 
+    else: 
+        print("Invalid option. Please answer yes or no")
+        continue 
+
+#next question 
+while True: 
+    try: 
+        answer = int(input("On a scale of 0- 4, how disoriented is the patient on a daily basis?").strip())
+        endcephalopathy_score3 = endcephalopathy_score2 + answer
+        if answer not in [0,1,2,3,4]: 
+             print("Invalid option. Please enter an integer within range")
+             continue
+        break
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        continue 
+        if answer in [0,1,2,3,4]: 
+             print("Points entered.")
+             break
+
+    
+#calculating endcephalopathy score 
+endcephalopathy_score = (endcephalopathy_score1 + endcephalopathy_score2 + endcephalopathy_score3)
+if endcephalopathy_score in [0,1,2]: 
+    child_pugh_score5 = 1
+elif endcephalopathy_score in [3,4]:
+    child_pugh_score5 = 2 
+elif endcephalopathy_score in [5,6]:
+    child_pugh_score5 = 3
+
+#calculating final child pugh score
+child_pugh_score = child_pugh_score1 + child_pugh_score2 + child_pugh_score3 + child_pugh_score4 + child_pugh_score5
+if 5 <= child_pugh_score <= 6:
+    print("Class A.The patient has mild liver cirrhosis. Survival rate is high.")
+elif 7 <= child_pugh_score <= 9:
+    print ("Class B.The patient has moderate liver cirrhosis. More symptoms might emerge.")
+elif 10 <= child_pugh_score <= 15:
+    print ("Class C. The patient has severe liver cirrhosis. Look into transplants immediately.")
