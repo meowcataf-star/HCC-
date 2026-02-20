@@ -1,13 +1,16 @@
 import streamlit as sd
 import pandas as pd 
 import numpy as np 
+import matplotlib as plt
+import seaborn as sns
 df = pd.read_csv("cirrhosis.csv")
-
 #welcome message 
 sd.title("Child Pugh Score Calculator.")
 sd.header ("This calculator is for educational purposes only.")
-
-#patient_ID = df.loc[15, 'ID'] #use st.selectbox(...) when importing Streamlit to allow user to pick patient ID 
+sd.sidebar.header("Patient Child Pugh Scores")
+patient_ID = df.loc['ID'].unique()
+selected_ID = sd. selectbox ("Select Patient ID", options=patient_ID) 
+patient_data = df[df['ID']==selected_ID].iloc[0]
 bilirubin = 0 
 albumin = 0 
 ascites = 0 
@@ -27,58 +30,87 @@ def calculate_child_pugh (bilirubin, albumin, ascites, endcepathology_level, inr
     elif 10 <= result <= 15:
         message = "The patient has severe liver cirrhosis. Look into transplants immediately."
         class_level = str("Class C")
-    return result and message 
-sd.header.sidebar ("Patient Data")
+        risk = str("Survival rate is 35-45%")
+    return {
+        "score": result,
+        "class": class_level,
+        "advice": message,
+        "rate": risk 
+    }
+df['Child_Pugh_Score'] = df.apply(calculate_child_pugh, axis=1)
+sd.sidebar.header ("Patient Data")
 #defining bilirubin parameters 
-pv_bilirubin = sd.sidebar.slider("Choose Bilirubin level", 0.0, 28.0, 1.0)
+pv_bilirubin = sd.sidebar.slider(
+    "Choose Bilirubin level", 
+    0.0, 28.0, 1.0,
+    float(patient_data['Bilirubin']) 
+     )
 if pv_bilirubin < 2:
     bilirubin = 1
 elif 2 <= pv_bilirubin <= 3:
     bilirubin = 2 
 elif pv_bilirubin > 3:
     bilirubin = 3 
-print("Adding " + str(bilirubin) + " points to the score!")
-
 #defining albumin parameters
-pv_al = sd.sidebar.slider("Choose Albumin level", 0.0, 4.64, 1.0 )
+pv_al = sd.sidebar.slider(
+    "Choose Albumin level", 
+    0.0, 4.64, 1.0,
+    float(patient_data ['Albumin'])
+     )
 if pv_al > 3.5:
     albumin = 1
 elif 2.8 <= pv_al <= 3.5:
     albumin = 2
 elif pv_al < 2.8: 
     albumin = 3
-print("Adding " + str(albumin) + " points to the score!")
-
 #defining ascites parameters 
-pv_as = sd.sidebar.selectbox ("Ascites Presence", ["None", "Mild", "Severe"])
-if pv_as == "Severe":
+pv_as = sd.sidebar.selectbox (
+    "Ascites Presence", 
+    ["N", "NA", "Y"],
+    str(patient_data['Ascites'])
+    )
+if pv_as == "Y":
     ascites = 3
-elif pv_as == "Mild":
+elif pv_as == "NA":
     ascites = 2
-elif pv_as == "None":
+elif pv_as == "N":
     ascites = 1
-print ("Adding " + str(ascites) + " points to the score!")
-
 #defining INR parameters 
-PT = sd.sidebar.slider ("Choose Prothrombin level", 10.0, 28.0, 1.0)
+PT = sd.sidebar.slider (
+    "Choose Prothrombin level", 
+    10.0, 28.0, 1.0,
+    float(patient_data['Prothrombin'])
+    )
 if PT/12 <1.7:
     inr = 1
 elif 1.7 <= PT/12 <= 2.3: 
     inr = 2 
 elif PT/12 >2.3: 
     inr = 3 
-print ("Adding " + str(inr) + " points to the score!")
-
 #defining endce. parameters 
-pv_stage = sd.sidebar.selectbox("Choose Stage", ["1", "2", "3", "4"])
+pv_stage = sd.sidebar.selectbox(
+    "Choose Stage", 
+    ["1", "2", "3", "4"],
+    str(patient_data["Staga"])
+    )
 if pv_stage in [1,2,3]:
     endcepathology_level = 1 
 elif pv_stage == 4 and bilirubin == 2: 
     endcepathology_level = 2 
 elif pv_stage == 4 and bilirubin == 3: 
     endcepathology_level = 3 
-print ("Adding " + str(endcepathology_level) + " points to the score!")
-
+#print ("Adding " + str(endcepathology_level) + " points to the score!")
 conclusion = calculate_child_pugh(bilirubin, albumin, ascites, endcepathology_level, inr)
-print(str(conclusion))
-sd.subheader(f"Child Pugh Score: {result}")
+sd.subheader(f"Child Pugh Score: {conclusion}")
+#graphing/plotting 
+sd. subheader("Relationship between Stage and Cirrhosis Risk")
+fig, ax = plt.subplots() #created the canvas - area for graphing 
+sns.barplot( 
+    data=df, 
+    x= 'Stage', 
+    order= [1,2,3,4],
+    y= 'Child_Pugh_Score',
+    ax=ax
+)
+sd.pyplot(fig) #show on app 
+
