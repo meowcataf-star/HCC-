@@ -1,0 +1,31 @@
+#simple returning home simulation --> trying to calculate different circumstances when going home 
+import random as rd
+import streamlit as sd 
+
+    #return final consensus based off of the combination of results 
+sd.slider ('Pick a season', "winter", "summer", "spring", "autumn")
+def get_rdtype (season):
+    if season == "winter":
+        get_rdtype = "ice", 
+    elif season == "summer" or "autumn": 
+        get_rdtype = "cement", 
+    elif season == "spring": 
+        get_rdtype = "wet", 
+    return get_rdtype 
+
+def get_rdtext (road_type): 
+    if road_type == "ice": 
+        get_rdtext = "slippery", 
+    elif road_type == "cement" or "wet": 
+        get_rdtext = "smooth", 
+    return get_rdtext 
+
+def get_rdlgth (rd.randint(1,2)): 
+
+        
+def road_profile (road_type, road_texture, road_length, terrain):
+    road_type = get_rdtype (season) #depending on season, the usual road type taken varies 
+    road_texture = get_rdtext (road_type) #depending on road type, road texure differs 
+    road_length = get_rdlgth (rd.randint(1,2))
+    terrain = get_terrain (rd.randint [1,2,3])
+
