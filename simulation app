@@ -1,0 +1,27 @@
+import simul as sm
+import streamlit as sd
+import random as rd
+sd.session_state.departure_location = "123 Churchill Ave"
+sd.session_state.destination = "School"
+sd.write (f"You depart from {sd.session_state.departure_location}")
+sd.write (f"Your destination is {sd.session_state.destination}")
+
+#entering data 
+
+season = sd.selectbox ('Pick a season', "winter", "summer", "spring", "autumn")
+road_type = sd.selectbox ('Pick road condition', "ice", "cement", "wet")
+
+sd.session_state.walking_time = 0
+sd.write(f"Your walking time is {sd.session_state.walking_time}")
+
+
+    
+get_terrain = sd.button (rd.choice ["mild", "flat", "high"])
+energy = sd. selectbox ('Your energy level', "energized!", "a bit tired", "tired", "very tired")
+
+
+    
+
+
+
+
